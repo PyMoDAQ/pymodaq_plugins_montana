@@ -10,7 +10,6 @@
 import os
 import os.path as op
 import sys
-sys.path.append(op.abspath(op.join(op.dirname(__file__), os.pardir, os.pardir, 'commonScripting', 'pythonlibs')))
 
 from enum import IntEnum
 import requests
@@ -18,15 +17,16 @@ import json
 import re
 import time
 
-import ssh_tunnel
+from . import ssh_tunnel
 import socket
 import http
 
-import mirs_helpers
+from . import mirs_helpers
 
 _force_ipv4 = True  # Some day IPv6 will be ubiquitous.  Today is not that day.
 
 _success = range(200,300)
+
 
 class Rest_Ports(IntEnum):
     """Constants for TCP port numbers of the various REST servers

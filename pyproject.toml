@@ -13,7 +13,7 @@ name = "pymodaq_plugins_montana"
 description = 'Plugin for instruments from Montana: Cryostat, positioner (rook)...'
 dependencies = [
     "pymodaq>=5.0.0",
-    #todo: list here all dependencies your package may have
+    "sshtunnel",
 ]
 
 authors = [

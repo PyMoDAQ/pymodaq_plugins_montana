@@ -6,7 +6,7 @@
 
 import sys
 import os
-import instrument 
+from . import instrument
 
 from typing import Optional, List, Tuple, Any
 
