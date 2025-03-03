@@ -3,14 +3,15 @@
 
 import sys
 import os
-from . import instrument
+from pymodaq_plugins_montana.hardware import instrument
 import time
 import datetime
 
+
 class Rook(instrument.Instrument):
-    def __init__(self, ip, version='v1', verbose=False, tunnel=False):
+    def __init__(self, ip, version='v1', verbose=False, tunnel=False, port=instrument.Rest_Ports.lynx_hlm):
         super().__init__(ip=ip,
-                         port=instrument.Rest_Ports.lynx_hlm,
+                         port=port,
                          version=version,
                          verbose=verbose,
                          tunnel=tunnel)
@@ -137,7 +138,7 @@ class Rook(instrument.Instrument):
 
 if __name__ == "__main__":
 
-    rook = Rook('192.168.45.120', verbose=False)
+    rook = Rook('10.35.3.38', verbose=False)
 
     stack_num = 1
     axis_num  = 1

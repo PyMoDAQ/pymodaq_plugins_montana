@@ -3,7 +3,7 @@ from typing import Union, List, Dict
 from pymodaq.control_modules.move_utility_classes import (DAQ_Move_base, comon_parameters_fun,
                                                           main, DataActuatorType, DataActuator)
 
-from pymodaq_utils.utils import ThreadCommand  # object used to send info back to the main thread
+from pymodaq_utils.utils import ThreadCommand
 from pymodaq_utils.logger import set_logger, get_module_name
 
 from pymodaq_data import Q_
