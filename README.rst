@@ -33,12 +33,13 @@ Below is the list of instruments included in this plugin
 Actuators
 +++++++++
 
+* **CryoTemperature**: control the User1 (could be the ATSM) temperature set point
 * **Rook**: control of the Rook nano-positioner
 
 Viewer0D
 ++++++++
 
-* **Temperature**: Get the Cryostat Temperature
+* **CryoInfo**: Get the Cryostat Temperature and Pressure
 
 
 Installation instructions
@@ -46,4 +47,4 @@ Installation instructions
 
 * PyMoDAQ’s >= 5.
 * Operating system’s version: any
-* Will work only if the IP address of your instrument is reachable on yoru network
+* Will work only if the IP address of your instrument is reachable on your network
