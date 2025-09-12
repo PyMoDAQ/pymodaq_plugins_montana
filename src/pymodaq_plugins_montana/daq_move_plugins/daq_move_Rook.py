@@ -34,12 +34,14 @@ class DAQ_Move_Rook(DAQ_Move_base):
     """
     is_multiaxes = True
     _axis_names: Union[List[str], Dict[str, int]] = {'Xaxis': 1, 'Yaxis': 2, 'Zaxis':3}
-    _controller_units: Union[str, List[str]] = 'm'
-    _epsilon: Union[float, List[float]] = 1e-7
+    _controller_units: Union[str, List[str]] = 'µm'
+    _epsilon: Union[float, List[float]] = 0.1
     data_actuator_type = DataActuatorType.DataActuator
     params = [
                  {'title': 'Server IP:', 'name': 'ipaddress', 'type': 'str', 'value': plugin_config('ip_address')},
                  {'title': 'Cryo. Port:', 'name': 'cryo_port', 'type': 'int', 'value': plugin_config('rook_port')},
+                 {'title': 'Close Loop:', 'name': 'close_loop', 'type': 'bool', 'value': True},
+                 {'title': 'Velocity:', 'name': 'velocity', 'type': 'float', 'value': 1, 'suffix': 'um/s'},
                 ] + comon_parameters_fun(is_multiaxes, axis_names=_axis_names, epsilon=_epsilon)
 
     def ini_attributes(self):
@@ -55,7 +57,7 @@ class DAQ_Move_Rook(DAQ_Move_base):
         """
 
         pos = DataActuator(data=self.controller.get_axis_encoder_position(self.stack_num, self.axis_value),
-                           units=self.axis_unit)
+                           units='m')
         pos = self.get_position_with_scaling(pos)
         return pos
 
@@ -81,7 +83,12 @@ class DAQ_Move_Rook(DAQ_Move_base):
         param: Parameter
             A given parameter (within detector_settings) whose value has been changed by the user
         """
-        pass
+        if param.name() == 'close_loop':
+            self.controller.set_axis_closed_loop(self.stack_num, self.axis_value,
+                                                 param.value())
+        elif param.name() == 'velocity':
+            self.controller.set_axis_velocity(self.stack_num, self.axis_value,
+                                              Q_(param.value(), param.opts['suffix']).m_as('m/s'))
 
     def ini_stage(self, controller=None):
         """Actuator communication initialization
@@ -102,18 +109,20 @@ class DAQ_Move_Rook(DAQ_Move_base):
             self.controller = Rook(ip=self.settings['ipaddress'], port=self.settings['cryo_port'])
         else:
             self.controller = controller
+        self.commit_settings(self.settings.child('close_loop'))
+        self.commit_settings(self.settings.child('velocity'))
 
         self.emit_status(ThreadCommand('update_ui', attribute='set_abs_value_red',
                                            args=[Q_(0, 'um')]))
 
         self.emit_status(ThreadCommand('update_ui', attribute='set_abs_value_green',
-                                   args=[Q_(100, 'um')]))
+                                   args=[Q_(10, 'um')]))
 
         self.emit_status(ThreadCommand('update_ui', attribute='set_abs_value',
-                                       args=[Q_(100, 'um')]))
+                                       args=[Q_(10, 'um')]))
 
         self.emit_status(ThreadCommand('update_ui', attribute='set_rel_value',
-                                       args=[Q_(100, 'um')]))
+                                       args=[Q_(1, 'um')]))
 
         info = "Rook is connected"
         initialized = True
@@ -126,11 +135,11 @@ class DAQ_Move_Rook(DAQ_Move_base):
         ----------
         value: (float) value of the absolute target positioning
         """
-
         value = self.check_bound(value)  #if user checked bounds, the defined bounds are applied here
         self.target_value = value
         value = self.set_position_with_scaling(value)  # apply scaling if the user specified one
-        self.controller.move_axis_absolute_position(self.stack_num, self.axis_value, value.value())
+        self.controller.move_axis_absolute_position(self.stack_num, self.axis_value,
+                                                    value.to_base_units().value())
 
     def move_rel(self, value: DataActuator):
         """ Move the actuator to the relative target actuator value defined by value
