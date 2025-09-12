@@ -65,10 +65,16 @@ class Rook(instrument.Instrument):
 
         return reached_target
 
-    def set_axis_velocity(self, stack_num, axis_num, velocity):
-        '''Set the target velocity of the given axis'''
+    def set_axis_velocity(self, stack_num: int, axis_num: int, velocity: float):
+        '''Set the target velocity of the given axis
+
+        velocity in m/s
+        '''
         self.set_prop(f'stacks/stack{stack_num}/axes/axis{axis_num}/properties/velocity', velocity)
         return
+
+    def get_axis_velocity(self, setack_num, axis_num) -> float:
+        return self.get_prop(f'stacks/stack{stack_num}/axes/axis{axis_num}/properties/velocity')['velocity']
 
     def move_axis_to_negative_limit(self, stack_num, axis_num, wait=False):
         '''Move axis to the negative limit'''
@@ -83,7 +89,13 @@ class Rook(instrument.Instrument):
         return
 
     def move_axis_absolute_position(self, stack_num, axis_num, pos, wait=False):
-        '''Move axis to an absolute position'''
+        """Move axis to an absolute position
+
+        Parameter
+        ---------
+        pos: float
+            position in meter
+        """
         self.call_method(f'stacks/stack{stack_num}/axes/axis{axis_num}/methods/moveAbsolute(double:pos)', pos)
         if wait: self.wait_for_axis_not_moving(stack_num, axis_num)
         return
